@@ -1,0 +1,134 @@
+#lang racket
+
+;; Blatt 2
+
+; Aufgabe 1
+(define wuff 'Flocki)
+(define Hund wuff)
+(define Wolf 'wuff)
+
+(define (welcherNameGiltWo PersonA PersonB)
+  (let (( PersonA 'Zaphod)
+        (PersonC PersonA))
+    PersonC))
+
+(define xs1 '(0 2 3 wuff Hund))
+(define xs2 (list wuff Hund))
+(define xs3 (cons Hund wuff))
+
+; 1. wuff -> 'Flocki
+; Begründung: wuff ist das Symbol 'Flocki zugewiesen
+; 2. Hund -> 'Flocki
+; Begründung: Hund ist die Definition wuff zugewiesen, und wuff wird das Symbol 'Flocki zugewiesen
+; 3. Wolf -> 'wuff
+; Begründung: Wolf ist das Symbol 'wuff zugewiesen
+; 4. (quote Hund) -> 'Hund
+; Begründung: die quote-Anweisung macht aus Hund das Symbol 'Hund
+; 5. (eval Wolf) -> 'Flocki
+; Begründung: die eval-Anweisung wertet das Symbol 'wuff, das Wolf zugewiesen ist, zu wuff aus und wuff ist das Symbol 'Flocki zugewiesen
+; 6. (eval Hund) -> Flocki: undefined
+; Begründung: die eval-Anweisung wertet das Symbol 'Flocki, das Hund zugewiesen ist, zu Flocki aus; dann wird aber kein Wert gefunden, der Flocki zugewiesen wird
+; 7. (eval 'Wolf) -> 'wuff
+; Begründung:  die eval-Anweisung wertet das Symbol 'Wolf zu Wolf aus und gibt daher das Symbol 'wuff aus, das Wolf zugewiesen ist
+; 8. (welcherNameGiltWo 'lily 'potter) -> 'lily
+; Begründung: die Bindungen der Variablen werden nicht sequenziell in Abhängigkeit voneinander vorgenommen, daher wird am Ende PersonC ausgegeben, der PersonA (also 'lily) zugewiesen wurde und nicht 'Zaphod, obwohl 'Zaphod vorher PersonA zugewiesen wurde
+; 9. (cdddr xs1) -> '(wuff Hund)
+; Begründung: Es wird die Liste xs1 ab dem vierten Element ausgegeben
+; 10.(cdr xs2) -> '(Flocki)
+; Begründung: Es wird die Liste xs2 ab dem zweiten Element ausgegeben und vorher das zweite Element ausgewertet
+; 11. (cdr xs3) -> 'Flocki
+; Begründung: Es wird das zweite Element der konkatenierten Liste ausgewertet und ausgegeben
+; 12. (sqrt 1/4) -> 1/2
+; Begründung: die eval-Anweisung wertet (sqrt 1/4) aus, es wird also die Wurzel gezogen
+; 13. (eval '( welcherNameGiltWo 'Wolf 'Hund)) -> 'Wolf
+; Begründung: die eval-Anweisung wertet zuerst ’(welcherNameGiltWo 'Wolf 'Hund) zu (welcherNameGiltWo 'Wolf 'Hund) aus; der Rest geschieht analog zu 8
+; 14. (eval (welcherNameGiltWo 'Hund 'Wolf )) -> 'Flocki
+; Begründung: die eval-Anweisung führt die Funktion welcherNameGiltWo aus und wertet das zurückgegebene Symbol 'Hund zu Hund und damit zu 'Flocki aus
+
+
+; Aufgabe 2.1
+(define (natural? n)
+  (and (integer? n)
+       (>= n 0)))
+
+(define (fakultät x)
+  (if (natural? x)
+      (if (> x 0) (* x (fakultät (- x 1))) 1)
+      false))
+
+; Aufgabe 2.2
+(define (power r n)
+  (if (and (rational? r) (natural? n))
+      (if (= n 0) 1
+          (if (even? n) (sqr (power r (/ n 2))) (* r (power r (- n 1)))))
+      false))
+
+; Aufgabe 2.3
+
+(define (give-fracture x) (/ (+ x 1) (fakultät x)) )
+
+;Rekursion
+(define (find-e x) (
+                   if (< (give-fracture x) (/ 1 (expt 10 1000))) 1
+                     (+ (give-fracture x) (find-e (+ x 1)))
+                     ))
+
+(define (give-e x)
+  (/ (find-e x) 2))
+
+
+;liefert e
+(* (give-e 1) (expt 10 1001))
+
+
+
+; Aufgabe 2.4
+; der Wert "20000" kann je nach Computerleistung variiert werden
+(define (pi_help x y acc)
+  (if (< x 20000)
+      (pi_help (+ x 2)
+               (* y -1)
+               (+ acc (* y (/ 1 x))))
+  acc))
+
+(define (my_pi x y acc)
+  (* (pi_help x y acc) 4))
+
+(* (my_pi 1 1 0) (expt 10 1000))
+
+; Aufgabe 3
+(define (type-of exp)
+   (cond
+    [(boolean? exp) 'Boolean]
+    [(list? exp) 'List]
+    [(pair? exp) 'Pair]
+    [(symbol? exp) 'Symbol]
+    [(number? exp) 'Number]
+    [(char? exp) 'Char]
+    [(string? exp) 'String]
+    [(vector? exp) 'Vector]
+    [(procedure? exp) 'Procedure]
+    [else "Type not defined"]))
+
+(define (id z) z)
+
+; (type-of (* 2 3 4)) -> 'Number
+; Begründung: (* 2 3 4) ergibt 24, das eine Nummer ist
+; (type-of (not 42)) -> 'Boolean
+; Begründung: der Ausdruck (not 42) ergibt #f
+; (type-of '(eins zwei drei)) -> 'List
+; Begründung: '(ein zwei drei) ist eine Liste (allerdings auch ein Pair; list? steht aber im cond vor pair?; pair? würde ausgegeben beispielsweise bei (type-of (cons 1 2)))
+; (type-of '()) -> 'List
+; Begründung: '() ist eine leere Liste
+; (type-of (id sin)) -> 'Procedure
+; Begründung: id nimmt einen Wert als Parameter und gibt ein Ergebnis aus und ist daher eine Operation
+; (type-of (string-ref "SE3" 2)) -> 'Char
+; Begründung: Mit der string-ref Anweisung wird der Charakter an Stelle 2 des Strings "SE3" ausgegeben
+; (type-of (lambda (x) x)) -> 'Procedure
+; Begründung: lambda nimmt einen Wert als Parameter und gibt ein Ergebnis aus und ist daher eine Operation
+; (type-of type-of) -> 'Procedure
+; Begründung: type-of prüft, was type-of ist. Da type-of eine Funktion ist, wird 'Procedure ausgegeben
+; (type-of (type-of type-of)) -> 'Symbol
+; Begründung: Bei (type-of type-of) wird 'Procedure ausgegeben. Dies ist wiederum ein Symbol. Daher gibt(type-of (type-of type-of)) als Ergebnis 'Symbol aus
+
+
