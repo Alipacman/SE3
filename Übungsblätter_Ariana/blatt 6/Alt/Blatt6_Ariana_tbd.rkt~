@@ -1,0 +1,167 @@
+#lang racket
+(require 2htdp/image)
+(require 2htdp/universe)
+
+
+#|
+Blatt 6, Gruppe 8, Mittwoch 10-12 Uhr, Raum G-210, Übungsleiter Rainer Jürgensen
+Thomas Hofmann (6764839⁠⁠⁠)
+Patricia Häußer (⁠⁠⁠6771401)
+Ariana Sliwa (6816391)
+|#
+
+;;; 1 Formen der Rekursion
+
+;;  kopfstueck:
+;   Lineare Rekursion, da in der Fallunterscheidung nur jeweils einmal kopfstueck verwendet wird.
+;   Keine Baumrekursion, da in der Fallunterscheidung nicht mehrfach auf die Definition Bezug genommen wird.
+;   Keine geschachtelte Rekursion, da die Funktion nicht selbst als Argument übergeben wird.
+;   Eine direkte Rekursion und somit keine indirekte, da sich keine weiteren Definitionen wechselseitig rekursiv verwenden.
+
+;;  endstueck:
+;   Lineare Rekursion, da in der Fallunterscheidung nur jeweils einmal endstueck verwendet wird.
+;   Keine Baumrekursion, da in der Fallunterscheidung nicht mehrfach auf die Definition Bezug genommen wird.
+;   Keine geschachtelte Rekursion, da die Funktion nicht selbst als Argument übergeben wird.
+;   Eine direkte Rekursion und somit keine indirekte, da sich keine weiteren Definitionen wechselseitig rekursiv verwenden.
+
+;;  merge:
+;   Keine lineare Rekursion, da merge in der Fallunterscheidung zweimal aufgerufen wird.
+;   Baumrekursion, da in der Fallunterscheidung mehrfach (zweimal) auf die Definition Bezug genommen wird.
+;   Keine geschachtelte Rekursion, da die Funktion nicht selbst als Argument übergeben wird.
+;   Eine direkte Rekursion und somit keine indirekte, da sich keine weiteren Definitionen wechselseitig rekursiv verwenden.
+
+;;  merge-sort:
+;   Keine lineare Rekursion, da merge-sort in der Fallunterscheidung zweimal aufgerufen wird.
+;   Baumrekursion, da in der Fallunterscheidung mehrfach (zweimal) auf die Definition Bezug genommen wird.
+;   Keine geschachtelte Rekursion, da die Funktion nicht selbst als Argument übergeben wird.
+;   Eine indirekte Rekursion, da merge-sort auf merge Bezug nimmt.
+
+#|(define (create-UFO-scene height)
+  (underlay/xy (rectangle 100 100 "solid" "white") 50 height UFO))
+ 
+(define UFO
+  (underlay/align "center"
+                  "center"
+                  (circle 10 "solid" "green")
+                  (rectangle 40 4 "solid" "green")))
+ 
+(animate create-UFO-scene)|#
+
+(define (dreieck größe)
+  (triangle größe "outline" "PaleGreen"))
+
+(define (dreieck2 größe)
+  (triangle größe "outline" "DarkSeaGreen"))
+
+(define (dreieck3 größe)
+  (triangle größe "solid" "PaleGreen"))
+
+(define (dreieck4 größe)
+  (triangle größe "solid" "DarkSeaGreen"))
+
+(define (rechteckb breite höhe)
+  (rectangle breite höhe "solid" "seagreen"))
+
+(define (rechteckrot breite höhe)
+  (rectangle breite höhe "solid" "Crimson"))
+
+(define (rechteckIndividuell breite höhe farbe)
+  (rectangle breite höhe "solid" farbe))
+
+(define (band g)
+  (overlay (line g 0 "gold")               
+           (line 0 g "gold")))
+
+(define (Geschenk g)
+  (overlay (Schleife)
+           (band g)
+           (rechteckrot g g)
+           (Schleife)))
+
+(define (Schleife)
+  (overlay/offset
+   (beside (ellipse 40 20 "outline" "gold")
+           (ellipse 40 20 "outline" "gold"))
+   0 14
+   (beside (line 30 -20 "gold")
+           (line 30 20 "gold"))))
+
+; Zeichnet ein Geschenk mit individueller Farbauswahl
+; @param farbe erwartet String
+(define (GeschenkIndividuell g farbe)
+  (overlay
+   (overlay/align "center" "middle"
+                  (Schleife)
+                  (band g))
+   (rechteckIndividuell g g farbe)))
+
+(define (GeschenkIndividuell2 g farbe)
+  (overlay/offset
+   (Schleife)
+   0 (/ g 2)
+   (overlay/align "center" "middle"
+                  (line 0 g "gold")
+                  (rechteckIndividuell g g farbe))))
+
+
+; Kugel
+;(circle 15 "solid" "Crimson")
+
+;
+(define (TannenReiheOutline n g)
+  (cond
+    [(zero? n) (square 1 "solid" "white")]
+    [else
+     (local [(define c (TannenReiheOutline (- n 1) g))
+             (define i (above/align "center"
+                                    (dreieck2 15)
+                                    (beside (dreieck g)
+                                            (dreieck g))
+                                    (beside (dreieck g)
+                                            (dreieck2 g)
+                                            (dreieck g))))]
+       (beside i c))]))
+
+(define (TannenReiheSolid n g)
+  (cond
+    [(zero? n) (square 1 "solid" "white")]
+    [else
+     (local [(define c (TannenReiheSolid (- n 1) g))
+             (define i (above/align "center"
+                                    (dreieck4 15)
+                                    (beside (dreieck3 g)
+                                            (dreieck3 g))
+                                    (beside (dreieck3 g)
+                                            (dreieck4 g)
+                                            (dreieck3 g))))]
+       (beside i c))]))
+
+(define (maleTannenbaumSolid g)
+  (above/align "center"
+               (TannenReiheSolid 1 g)
+               (TannenReiheSolid 2 g)
+               (TannenReiheSolid 3 g)
+               (TannenReiheSolid 4 g)
+               (TannenReiheSolid 5 g)
+               (rectangle g g "solid" "SaddleBrown")))
+
+(define (maleTannenbaumOutline g)
+  (above/align "center"
+               (TannenReiheOutline 1 g)
+               (TannenReiheOutline 2 g)
+               (TannenReiheOutline 3 g)
+               (TannenReiheOutline 4 g)
+               (TannenReiheOutline 5 g)
+               (rectangle g g "solid" "SaddleBrown")))
+
+(define (zeichneSzene)
+  (overlay/offset (beside
+                   (GeschenkIndividuell2 50 "Maroon")
+                   (GeschenkIndividuell2 75 "crimson")
+                   (GeschenkIndividuell2 50 "DarkRed"))
+                  0 -100
+  (overlay/offset (maleTannenbaumSolid 15)
+                  300 0
+                  (maleTannenbaumSolid 15))))
+  ;150 0
+  ;(GeschenkIndividuell2 100 "crimson"))

@@ -1,0 +1,149 @@
+#lang racket
+(require se3-bib/tools-module)
+
+#|
+Blatt 4, Gruppe 8, Mittwoch 10-12 Uhr, Raum G-210, Übungsleiter Rainer Jürgensen
+Thomas Hofmann (6764839⁠⁠⁠)
+Patricia Häußer (⁠⁠⁠6771401)
+Ariana Sliwa (6816391)
+|#
+
+;;; 1 Auswertung von Ausdrücken
+
+; 1. (max (min 5 (- 6 7)) 8)
+;    Der Ausdruck evaluiert zu 8. Erst wird das Min von 5 und -1 genommen, dann das Max von -1 und 8.
+; 2. '(+ (- 11 13) 17)
+;    Der Ausdruck verändert sicht nicht, da es eine Liste ist und die Werte nicht in der Liste verändert werden.
+; 3. (cadr '(Alle Jahre wieder))
+;    Der Ausdruck evaluiert zu 'Jahre, da das zweite Element der Liste ausgegeben wird.
+; 4. (cddr '(kommt (das Christuskind)))
+;    Gibt eine leere Liste aus, da durch cddr beide Elemente der Liste entfernt werden.
+; 5. (cons 'Auf '(die Erde nieder))
+;    Das Element 'Auf wird am Anfang der Liste '(die Erde nieder) eingefügt: '(Auf die Erde nieder)
+; 6. (cons 'Wo 'wir)
+;    Es wird eine neue Liste mit dem Pair '(Wo . wir) gebildet
+; 7. (equal? (list 'Menschen 'sind) '(Menschen sind))
+;    Gibt #t zurück, da beide Listen gleich sind.
+; 8. (eq? (list 'Rudolph 'Das 'Rentier) (cons 'Rudolph '(Das Rentier)))
+;    Es wird #f ausgegeben, da mit eq? auf Identität und nicht Gleichheit geprüft wird. Die Listen sind zwar gleich, aber nicht identisch.
+
+;;; 2 Textgenerierung
+
+
+;   Datenstruktur für die internationale Buchtabiertafel
+;   Wir erstellen eine Liste, die zu jedem Buchstaben einen Schlüssel liefert. Durch diesen Schlüssel können wir auf den Wert zugreifen
+
+(define buchstabiertafel 
+  '(
+    (#\A Alfa)
+    (#\B Bravo)
+    (#\C Charlie)
+    (#\D Delta)
+    (#\E Echo)
+    (#\F Foxtrott)
+    (#\G Golf)
+    (#\H Hotel)
+    (#\I India)
+    (#\J Juliett)
+    (#\K Kilo)
+    (#\L Lima)
+    (#\M Mike)    
+    (#\N November)   
+    (#\O Oscar)
+    (#\P Papa)
+    (#\Q Quebec)
+    (#\R Romeo)
+    (#\S Sierra)   
+    (#\T Tango)    
+    (#\U Uniform)    
+    (#\V Viktor)    
+    (#\W Whiskey)    
+    (#\X X-ray)    
+    (#\Y Yankee)    
+    (#\Z Zulu)    
+    (#\0 Nadazero)    
+    (#\1 Unaone)   
+    (#\2 Bissotwo)    
+    (#\3 Terrathree)   
+    (#\4 Kartefour)    
+    (#\5 Pantafive)
+    (#\6 Soxisix)
+    (#\7 Setteseven)   
+    (#\8 Oktoeight)   
+    (#\9 Novenine)   
+    (#\, Decimal)   
+    (#\. Stop)
+    ))
+
+;  Codierungsfunktion
+;  Ein eingegebener Buchstabe (char) wird auf den passenden Schlüssel aus der buchstabiertafel abgebildet.
+(define (natoalphabet schluessel)
+  (cadr (assoc schluessel buchstabiertafel)))
+
+;  Buchstabieren eines Eingabeworts
+;  @param: Eingabewort: Das Wort, das in Seesprech übersetzt werden soll.
+(define (Liste->Alphabet Eingabewort)
+  (if (not (list? Eingabewort))
+      (Liste->Alphabet (string->list Eingabewort))
+      (if (pair? Eingabewort)
+          (cons (natoalphabet(car Eingabewort)) (Liste->Alphabet (cdr Eingabewort)))
+          '() )))
+
+;;  1. Die Grammatik
+;   Eine Grammatik in Backus-Naur-Form für Notmeldungen
+
+#|
+<Wort>            := <Buchstabe>
+                     <Buchstabe> | <Wort>
+<Satz>            := <Wort> | <Wort> <Satz>
+<Buchstabe>       := a | b | c |...| z | A | B | C |...| Z
+<Ziffernfolge>    := <Ziffer> | <Ziffer> <Ziffernfolge>
+<Ziffer>          := 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9
+<Herkunftsland>   := <Wort>
+<Schiffsname>     := <Wort>
+<Rufzeichen>      := <Schiffsname> <Buchstabe> <Buchstabe> <Buchstabe> <Buchstabe>
+<Notfallposition> := Notfallposition <Satz> <Ziffernfolge> <Satz>
+<Notfallzeit>     := Notfallzeit <Ziffernfolge> <Wort>
+<Notfallart>      := <Satz>
+<WeitereAngaben>  := <Satz>
+<Pfeilzeichen>    := - -
+<Unterschrift>    := <Schiffsname> <Rufzeichen>
+<Over>            := Over
+<Mayday>          := Mayday
+
+|#
+(define (Notmeldung schiffsname rufzeichen position notfallart)
+  (display (string-append ("Mayday Mayday Mayday\n")
+                          (Liste->Alphabet "DE")
+                          (schiffsname schiffsname schiffsname (Liste->Alphabet rufzeichen)))))
+                          
+
+
+(define (notzeichen)
+  (string-append "MAYDAY MAYDAY MAYDAY \n"))
+(define (woher herkunftsland)
+  (string-append Liste->Alphabet "DE"))
+
+#|
+   
+   (display (string-append (anschrift firma straße ort) "\n"
+                           (anrede firma) "\n"
+                           (artikel) "\n"
+                           (schluss absender))))
+  (define (anschrift firma straße ort)
+    (string-append firma "\n"
+                   straße "\n"
+                   ort))
+  (define (anrede firma)
+    (string-append "Sehr geehrte DAmen und Herren der Firma " firma
+                   "\nHiermit möchte ich folgendes bestellen:"))
+  (define (artikel)
+    (if (= (random 2) 0)
+        (string-append (produkt) " " (artikel))
+        (produkt)))
+  (define produktliste '("Tastatur" "Maus" "USB-Stick"))
+  (define (produkt)
+    (car (one-of produktliste)))
+  (define (schluss absender)
+    (string-append "Mit freundlichen Grüßen " absender))
+|#

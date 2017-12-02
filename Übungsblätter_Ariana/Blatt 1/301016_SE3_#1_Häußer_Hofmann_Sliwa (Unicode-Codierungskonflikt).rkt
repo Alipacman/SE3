@@ -1,0 +1,152 @@
+#lang racket
+#|Blatt 1, Gruppe 8, Mittwoch 10-12 Uhr, Raum G-210, Übungsleiter Rainer Jürgensen
+Thomas Hofmann (6764839⁠⁠⁠)
+Patricia Häußer (⁠⁠⁠6771401)
+Ariana Sliwa (6816391)
+|#
+
+;Aufgabe 1.1 Bogenmaß und Grad
+
+;Funktion, die Grad zu Bogenmaß umrechnet
+(define (degrees->radians d)
+  (* (/ (* 2 pi) 360) d))
+
+;Funktion, die Bogenmaß zu Grad umrechnet
+(define (radians->degrees r)
+  (* (/ 360 (* 2 pi)) r))
+
+
+;Aufgabe 1.2 Umkehrfunktion acos
+(define (my-acos a)
+  (* 2 (atan(sqrt(/ (- 1 a) (+ 1 a))))))
+
+
+;Aufgabe 1.3 Kilometer und Seemeilen
+;Funktion, die Seemeilen in Kilometer umrechnet
+(define (nm->km nm)
+  (* nm 1.852))
+
+;Aufgabe 2.1 Großkreisentfernung
+
+;Die Funktion dG berechnet die Großkreisentfernung zweier Orte (A,B)
+;phiA und phiB bezeichnen die geographische Breite
+;LA und LA die geographische Länge
+(define (dG phiA LA phiB LB)
+  (my-acos (+  (* (sin phiA) (sin phiB)) 
+               (* (cos phiA) (cos phiB) (cos (- LA LB)) ))))
+
+;Die Funktion distanzAB berechnet die Distanz zweier Orte in km. Eingabe der Werte in Bogenmaß.
+;Die dG Funktion liefert die Großkreisentfernung der Orte A und B in Bogenmaß.
+;Die Funktion radians->degrees rechnet den Wert in Grad um, der mit 60 multipliziert wird.
+;Der Wert wird von nautischen Meilen in Kilometer mit der Funktion nm->km um gerechnet und in km ausgegeben.
+(define (distanzAB phiA LA phiB LB)
+  (nm->km (* 60 (radians->degrees(dG phiA LA phiB LB)))))
+
+;Umrechnung der gegebenen Werte von Grad in Bogenmaß
+;Oslo
+(define phiOslo (degrees->radians 59.93)) ;Breite
+(define LOslo (degrees->radians 10.75))   ;Länge
+
+;Hongkong
+(define phiHK (degrees->radians 22.20))   ;Breite
+(define LHK (degrees->radians 114.10))    ;Länge
+
+;San Francisco
+(define phiSF (degrees->radians 37.75))   ;Breite
+(define LSF (degrees->radians -122.45))   ;Länge
+
+;Honolulu
+(define phiHon (degrees->radians 21.32))  ;Breite
+(define LHon (degrees->radians -157.83))  ;Länge
+
+;Osterinsel
+(define phiOI (degrees->radians -27.10))  ;Breite
+(define LOI (degrees->radians -109.40))   ;Länge
+
+;Lima
+(define phiLima (degrees->radians -12.10));Breite
+(define LLima (degrees->radians -77.05))  ;Länge
+
+;Ergebnisse:
+
+;(distanzAB phiOslo LOslo phiHK LHK)
+;8589.412217586058
+
+;(distanzAB phiSF LSF phiHon LHon)
+;3844.688050487052
+
+;(distanzAB phiOI LOI phiLima LLima)
+;3757.6222188100514
+
+
+;Aufgabe 2.3 Himmelsrichtungen
+;Die Funktion Grad->Himmelsrichtung gibt für eingegebene Gradwerte die Himmelsrichtung aus
+
+; 0         Grad -> N
+; 1-44      Grad -> NNE
+; 45        Grad -> NE
+; 46-89     Grad -> ENE
+; 90        Grad -> E
+; 91-134    Grad -> ESE
+; 135       Grad -> SE
+; 136-179   Grad -> SSE
+; 180       Grad -> S
+; 181-224   Grad -> SSW
+; 225       Grad -> SW
+; 226 - 269 Grad -> WSW
+; 270       Grad -> W
+; 271-314   Grad -> WNW
+; 315       Grad -> NW
+; 316-359   Grad -> NNW
+; 360       Grad -> N
+(define (grad->himmelsrichtung grad)
+  (cond
+  [ ( <= grad 180) (cond
+                     [ (= grad 180) 'S]
+                     [ (< 135 grad 180) 'SSE]
+                     [ (= 135 grad)'SE]
+                     [ (< 90 grad 135)'ESE]
+                     [ (= 90 grad)'E]
+                     [ (< 45 grad 90)'ENE]
+                     [ (= 45 grad)'NE]
+                     [ (< 0 grad 45)'NNE]
+                     [ (= 0 grad)'N])
+                   ]
+  [else (cond
+          [ (< 360 grad)'PLEASE_GIVE_ME_A_NUMBER_BETWEEN_0_AND_360]
+          [ (= 360 grad)'N]
+          [ (< 315 grad 360)'NWN]
+          [ (= 315 grad)'NW]
+          [ (< 270 grad 315)'WNW]
+          [ (= 270 grad)'W]
+          [ (< 225 grad 270)'WSW]
+          [ (= 225 grad)'SW]
+          [ (< 180 grad 225)'SSW])
+        ]))
+                                                                     
+
+; Himmelsrichtung in Grad
+; Parameterübergabe in String
+
+(define (himmelsrichtung-->grad himmelsrichtung)
+  (cond
+  [ (eqv? (string->symbol himmelsrichtung) 'S) '180_GRAD]
+  [ (eqv? (string->symbol himmelsrichtung) 'SSE) '135-180_GRAD]
+  [ (eqv? (string->symbol himmelsrichtung) 'ESE) '90-135_GRAD]
+  [ (eqv? (string->symbol himmelsrichtung) 'E) '90_GRAD]
+  [ (eqv? (string->symbol himmelsrichtung) 'ENE) '45-90_GRAD]
+  [ (eqv? (string->symbol himmelsrichtung) 'NE) '45_GRAD]
+  [ (eqv? (string->symbol himmelsrichtung) 'NNE) '0-45_GRAD]
+  [ (eqv? (string->symbol himmelsrichtung) 'N) '0_ODER_360_GRAD]
+  [ (eqv? (string->symbol himmelsrichtung) 'NWN) '315-360_GRAD]
+  [ (eqv? (string->symbol himmelsrichtung) 'NW) '315_GRAD]
+  [ (eqv? (string->symbol himmelsrichtung) 'WNW) '270-315_GRAD]
+  [ (eqv? (string->symbol himmelsrichtung) 'W) '270_GRAD]
+  [ (eqv? (string->symbol himmelsrichtung) 'WSW) '225-270_GRAD]
+  [ (eqv? (string->symbol himmelsrichtung) 'SW) '225_GRAD]
+  [ (eqv? (string->symbol himmelsrichtung) 'SSW) '180-225_GRAD]
+  [ else 'DIES_IST_KEINE_GUELTIGE_HIMMELSRICHTUNG]))
+
+
+
+        

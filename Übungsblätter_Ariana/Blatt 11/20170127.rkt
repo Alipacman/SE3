@@ -1,0 +1,93 @@
+#lang racket
+(require se3-bib/prolog/prologInScheme)
+
+#|
+################################################################################
+##                                                                            ##  
+##                           1 –  Prolog in Racket                            ##  
+##                                                                            ##  
+################################################################################
+|#
+
+
+
+;––– 1.1 Unifikation –––
+
+; a)
+; (?- (= (pokemon Elektro Pikachu) (pokemon Elektro Raichu)))
+; -> Variablenbindung: keine, da nicht unifizierbar
+
+; b)
+; (?- (= (pokemon ?typ Bisasam) (pokemon Pflanze ?name)))
+; -> Variablenbindung: ?typ = Pflanze und ?name = Bisasam
+
+; c)
+;(?- (= (kampf (pokemon Normal ?name) (pokemon ?typ Ditto))
+;       (kampf (pokemon ?typ   Mauzi) (pokemon Normal Ditto))))
+; -> Variablenbindung: ?name = Mauzi und ?typ = Normal
+
+; d)
+;(?- (= (kampf (pokemon Normal ?name) (pokemon Wasser Shiggy))
+;       (kampf (pokemon Normal Mauzi) (pokemon Wasser ?name))))
+; -> Variablenbindung: keine, da nicht unifizierbar
+
+; e)
+;(?- (= (kampf (pokemon Normal ?) (pokemon Wasser Shiggy))
+;       (kampf (pokemon Normal Mauzi) (pokemon Wasser ?))))
+; -> Variablenbindung: keine, da name anonymisiert wurde
+
+; f)
+;(?- (= (team (trainer Ash) (pokemon Kampf ?name))
+;       (team (trainer ?name) (pokemon ?typ ?name2))))
+; -> Variablenbindung: ?name = Ash, ?typ = Kampf und ?name2 = Ash
+
+; g)
+;(?- (= (ei Pichu    .    ?eltern)
+;       (ei Pichu Pikachu Ditto)))
+; -> Variablenbindung: ?eltern = (Pikachu Ditto)
+
+
+
+;––– 1.2 Anfragen –––
+; ( ausleihe Signatur Lesernummer )
+(<- ( ausleihe "K 110 " 100) )
+(<- ( ausleihe "P 30" 102) )
+(<- ( ausleihe "P 32" 104) )
+(<- ( ausleihe "P 50" 104) )
+; ( vorbestellung Signatur Lesernummer )
+(<- ( vorbestellung "K 110" 104) )
+(<- ( vorbestellung "K 110" 102) )
+(<- ( vorbestellung "P 30" 100) )
+(<- ( vorbestellung "P 30" 104) )
+; ( leser Name Vorname Lesernummer Geburtsjahr )
+(<- ( leser Neugierig Nena 100 1989) )
+(<- ( leser Linux Leo 102 1990) )
+(<- ( leser Luator Eva 104 1988) )
+
+
+; 1.
+;(?- (vorbestellung "P 30" ?vorbestelltAnLesernummer))
+
+; 2.
+;(?- ( leser Luator Eva ? ?GeburtsjahrEva))
+
+; 3.
+;(?- (ausleihe "P 50" ?LeserNummer)
+;    (leser ?LeserName ?LeserVorname ?LeserNummer ?))
+
+; 4.
+; (?- (vorbestellung ? ?LeserNummer)
+;     (leser ?VorbestellerName ?VorbestellerVorname ?LeserNummer ?Geburtsjahr)
+;     (test (> 1957 ?Geburtsjahr)))
+
+; 5.
+;(?- (leser ?name ?vorname ?lesernummer ?)
+;    (ausleihe ?buch1 ?lesernummer)
+;    (ausleihe ?buch2 ?lesernummer)
+;    (!= ?buch1 ?buch2)
+;    (test (string<? ?buch1 ?buch2)))
+
+;(?- (leser ?name ?vorname ?leser ?)
+;      (count ?anzahl (ausleihe ? ?leser))
+;      (test (= ?anzahl 1)))
+

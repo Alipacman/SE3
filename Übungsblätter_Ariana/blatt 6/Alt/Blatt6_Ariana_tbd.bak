@@ -1,0 +1,90 @@
+#lang racket
+(require 2htdp/image)
+(require 2htdp/universe)
+
+
+#|
+Blatt 6, Gruppe 8, Mittwoch 10-12 Uhr, Raum G-210, Übungsleiter Rainer Jürgensen
+Thomas Hofmann (6764839⁠⁠⁠)
+Patricia Häußer (⁠⁠⁠6771401)
+Ariana Sliwa (6816391)
+|#
+
+;;; 1 Formen der Rekursion
+
+;;  kopfstueck:
+;   Lineare Rekursion, da in der Fallunterscheidung nur jeweils einmal kopfstueck verwendet wird.
+;   Keine Baumrekursion, da in der Fallunterscheidung nicht mehrfach auf die Definition Bezug genommen wird.
+;   Keine geschachtelte Rekursion, da die Funktion nicht selbst als Argument übergeben wird.
+;   Eine direkte Rekursion und somit keine indirekte, da sich keine weiteren Definitionen wechselseitig rekursiv verwenden.
+
+;;  endstueck:
+;   Lineare Rekursion, da in der Fallunterscheidung nur jeweils einmal endstueck verwendet wird.
+;   Keine Baumrekursion, da in der Fallunterscheidung nicht mehrfach auf die Definition Bezug genommen wird.
+;   Keine geschachtelte Rekursion, da die Funktion nicht selbst als Argument übergeben wird.
+;   Eine direkte Rekursion und somit keine indirekte, da sich keine weiteren Definitionen wechselseitig rekursiv verwenden.
+
+;;  merge:
+;   Keine lineare Rekursion, da merge in der Fallunterscheidung zweimal aufgerufen wird.
+;   Baumrekursion, da in der Fallunterscheidung mehrfach (zweimal) auf die Definition Bezug genommen wird.
+;   Keine geschachtelte Rekursion, da die Funktion nicht selbst als Argument übergeben wird.
+;   Eine direkte Rekursion und somit keine indirekte, da sich keine weiteren Definitionen wechselseitig rekursiv verwenden.
+
+;;  merge-sort:
+;   Keine lineare Rekursion, da merge-sort in der Fallunterscheidung zweimal aufgerufen wird.
+;   Baumrekursion, da in der Fallunterscheidung mehrfach (zweimal) auf die Definition Bezug genommen wird.
+;   Keine geschachtelte Rekursion, da die Funktion nicht selbst als Argument übergeben wird.
+;   Eine indirekte Rekursion, da merge-sort auf merge Bezug nimmt.
+
+#|(define (create-UFO-scene height)
+  (underlay/xy (rectangle 100 100 "solid" "white") 50 height UFO))
+ 
+(define UFO
+  (underlay/align "center"
+                  "center"
+                  (circle 10 "solid" "green")
+                  (rectangle 40 4 "solid" "green")))
+ 
+(animate create-UFO-scene)|#
+
+(define (dreieck größe)
+  (triangle größe "outline" "PaleGreen"))
+
+(define (dreieck2 größe)
+  (triangle größe "outline" "DarkSeaGreen"))
+
+(define (rechteckb breite höhe)
+  (rectangle breite höhe "solid" "seagreen"))
+
+
+; Kugel
+;(circle 15 "solid" "Crimson")
+
+
+(define (TannenReihe n g)
+  (cond
+    [(zero? n) (square 1 "solid" "white")]
+    [else
+     (local [(define c (TannenReihe (- n 1) g))
+             (define i (above/align "center"
+                                    (dreieck2 15)
+                                    (beside (dreieck g)
+                                            (dreieck g))
+                                    (beside (dreieck g)
+                                            (dreieck2 g)
+                                            (dreieck g))))]
+       (beside i c))]))
+
+(define (maleTannenbaum g)
+(above/align "center"
+             (TannenReihe 1 g)
+             (TannenReihe 2 g)
+             (TannenReihe 3 g)
+             (TannenReihe 4 g)
+             (TannenReihe 5 g)
+             (rectangle g g "solid" "SaddleBrown")))
+
+(overlay/align "left" "bottom"
+                 (maleTannenbaum 15)
+                 (maleTannenbaum 10))
+

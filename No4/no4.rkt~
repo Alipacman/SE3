@@ -1,0 +1,13 @@
+#lang racket
+(require se3-bib/butterfly-module)
+
+(define (random-rez-pattern x) (
+                             (cond [(eq? x 'star) (random-of 'star 'dots 'stripes 'nil 3)]))
+                            )
+
+  )
+
+; Hilfsfunktion um random Wert zu erhalten
+(define (random-of v w x y z )
+ (list-ref  (list v w x y)
+                  (random z)))

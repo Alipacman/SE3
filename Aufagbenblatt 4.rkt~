@@ -1,0 +1,59 @@
+#lang racket
+
+;Aufgabe 1
+
+#|
+1. evaluiert zu 6, weil erst der kleinere Wert von 5 und 1 (8 - 7 = 1) ausgewählt wird durch die Funktion min.
+Dannach wird durch die Funktion max der größere Wert von 1 (aus der ersten Funktion min) und 6 ausgewählt. 
+Wert
+2. ?
+3. Evaluiert zum Symbol King, weil durch die Funktion cadr wird aus der Liste aus dem Schwanz der Liste, das erste Element ausgegeben wird.
+4. Evaluiert zur leeren Liste, da aus der Liste mit 3 Elementen mit der Funktion cdddr das vierte Element returnt wird, und das letzte Element einer
+Liste ist die leere Liste.
+5. ?
+6. Evaluiert zu einem Pair ('((Deep and) . crisp)), bei welchen die Liste the '(Deep and)
+das erste Element und das Symbol crisp das zweite Element ist
+7. Erstelt erst eine Liste  durch :(list ’and ’even) und prüft dann ob Gleicheit besteht mit der Liste ’(and even), und returnt dann true,
+weil die Elemente identisch sind
+8. Erstellt erst eine Liste  mit der funktion list und eine mit der Funktion cons. Die Listen sind beide gleich, aber nicht identisch,
+da sie verschiedene verschiedene Refferenzen haben udn mit eq? wird dies geprüft und liefert daher false.
+|#
+
+;Aufgabe 2
+
+#|
+1.
+In unserer Lösung muss ein Satz nicht gramatikalisch korrekt sein und kann auch aus nur einem Wort oder Zeichen bestehen.
+Außerdem kann der Schiffsname auch aus nur einem Zeichen oder aus mehreren Wörtern bestehen.
+
+
+<Notmeldung> ::= <Überschrift> <Standort> <NotfallArt> <Peilzeichen> <Peilzeichen> <Unterschrift> <Over>
+
+<Überschrift> ::=
+<NotzeichenMayDay> <NotzeichenMayDay> <NotzeichenMayDay>
+<Hier Ist>
+<Schiffsname> <Schiffsname> <Schiffsname> <Rufzeichenbuchstabiert>
+<NotzeichenMayDay> <Schiffsname> <Schiffsnamebuchstabiert>
+<Rufzeichenbuchstabiert>
+
+<Standort> ::= <Satz>
+<NotfallArt> ::= <Satz>
+<Peilzeichen> ::= -
+<Unterschrift> ::= <Schiffsname> <Rufzeichenbuchstabiert>
+<Over> ::= OVER
+
+<NotzeichenMayDay> ::= MAYDAY
+<Hier Ist> ::= DELTA ECHO
+<Schiffsname> ::= <Satz>
+<Schiffsnamebuchstabiert> ::= <Satz>
+<Rufzeichenbuchstabiert> ::= <Satz>
+
+<Satz>            ::= <Satz> <Wort> | <Wort>
+<Wort>            ::= <Textzeichen> <Wort> | <Textzeichen> 
+<Textzeichen>     ::= a | b | c | d | e | f | g | h | i | j | k | l | m | n | o | p | q | r | s | t | u | v | w | x | y | z |
+                      A | B | C | D | E | F | G | H | I | J | K | L | M | N | O | P | Q | R | S | T | U | V | W | X | Y | Z |
+                      ä | Ä | ö | Ö | ü | Ü | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 0 | ° | ' | , | | .
+
+
+
+|#
