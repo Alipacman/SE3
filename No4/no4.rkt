@@ -17,7 +17,7 @@ Unserer Hauptfunktion sollen drei Parameter übergeben werden:
 |#
 
 
-
+;Fügt zwei Eltern zu einer Liste mit Attributen als paar
 (define (make-list x y) (list
                          (cons(car x)(car y))
                          (cons (cadr x) (cadr y))
@@ -28,9 +28,9 @@ Unserer Hauptfunktion sollen drei Parameter übergeben werden:
 (list 'red 'star 'curly 'hexagon)
 (list 'green 'dots 'curved 'rhomb)
 
+(make-list '(red star curly hexagon) '(green dots curved rhomb))
 
-(define (find-dom x) (x)
-  )
+
 (define (random-rez-pattern x) (
                              (cond 
                                     [(eq? x 'star) (random-of x 'dots 'stripes 'nil 3)]
