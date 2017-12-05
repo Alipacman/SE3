@@ -159,12 +159,13 @@ Beim visuellen darstellen eines Schmetterlings werden dann nur die dominanten bz
                         
 
 
-#|
+
 
 (define (get-values l) (cond
-                         [(not(equal? l '())) (make-butterfly(caar l) (get-values (cdr l)))]
+                         [(not(equal? l '())) ((caar l) (get-values (cdr l)))]
                          ))
 
+#|
 
 (define (give-child-list a b anzahl) 
                                       ((make-butterfly (car a) (make-butterfly a)
