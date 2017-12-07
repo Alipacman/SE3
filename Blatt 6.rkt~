@@ -1,0 +1,14 @@
+#lang racket
+
+;Aufgabe 1.1
+
+#|
+a) Funktion (take n xs)
+
+b) Funktion (drop n xs)
+
+c) Funktion (merge rel<? xs ys)
+
+d) Funktion (merge-sort rel<? xs)
+
+|#
