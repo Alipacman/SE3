@@ -18,7 +18,27 @@ Fallunterscheidung mehrfach auf die Definition Bezug genommen wird.
 d) Funktion (merge-sort rel<? xs)
 Es handelt sich bei der merge um eine baumartige Rekursion, da in der
 Fallunterscheidung mehrfach auf die Definition Bezug genommen wird.
-Nicht um eine Geschachtelte Rekursion, da andere Funktionen als übergeben hat
+Nicht um eine Geschachtelte Rekursion, da andere Funktionen als übergebenhat
+
+
+(define (make-fire x outcolor incolor)
+  (if (> x 1) 
+      (overlay/align
+       "center" "bottom"
+       (rhombus 20 45 "solid" outcolor)
+       (rhombus 35 45 "solid" incolor)
+       (rhombus 42 (+ -140 (/ 280 x)) "solid" outcolor)
+       (rhombus 38 (+ 140 (/ 280 x)) "solid" incolor)
+        
+       (make-fire (- x 1) outcolor incolor)
+       ; (make-fire (- x ) incolor outcolor)
+       )
+  
+      (rhombus 40 (+ -140 (/ 340 x)) "solid" outcolor)
+       
+      ))
+
+
 |#
 
 
@@ -47,23 +67,31 @@ Nicht um eine Geschachtelte Rekursion, da andere Funktionen als übergeben hat
   (if (> x 1) 
       (overlay/align
        "center" "bottom"
-       (rhombus 20 45 "solid" outcolor)
-       (rhombus 35 45 "solid" incolor)
-       (rhombus 42 (+ -140 (/ 280 x)) "solid" outcolor)
-       (rhombus 38 (+ 140 (/ 280 x)) "solid" incolor)
+       (rhombus (/ 80 x) 45 "solid" outcolor)
+       ; (rotate (* 8 x)(rhombus (* x 1.2) 7 "solid" incolor))
+               
+       ; (rhombus (* 8 x) 20 "solid" incolor)
         
-       (make-fire (- x 1) outcolor incolor)
+       (make-fire (- x 1) incolor outcolor)
        ; (make-fire (- x ) incolor outcolor)
        )
   
-      (rhombus 40 (+ -140 (/ 340 x)) "solid" outcolor)
+      (make-inner-fire 4 incolor outcolor)
        
       ))
 
+(define (make-inner-fire x color seccolor)
+  (if (> x 1)
+      (overlay
+       (isosceles-triangle  (/ 140 x)  90 "solid" color)
+       (make-inner-fire (- x 1) seccolor color))
+      (isosceles-triangle  0  120 "solid" color)
+      ))
+ 
 
 (define chimney (overlay/align
                  "center" "bottom"
-                 (make-fire 3 "red" "yellow")
+                 (make-fire 10 "red" "yellow")
                  ;(rectangle 40 40 "solid" (make-color 255 0 0))
                  (rectangle 100 80 "solid" (make-color 0 0 0))
                  (rectangle 120 90 "solid" (make-color 67 34 33))
@@ -154,56 +182,184 @@ Nicht um eine Geschachtelte Rekursion, da andere Funktionen als übergeben hat
 
 
 
-;erstellt ersten Baum (ganz links)
 
-(define (baum1-blätter x) 
-  (if (> x 1)
-      (above
-       (rhombus (- 110 (* x 10 )) 150 "solid" "seagreen")
-       (baum1-blätter (- x 1)) )
-      
-      (isosceles-triangle 100 120 "solid" "seagreen")
+;erstellt ersten Baum (links)
+
+
+;Baumschmuck
+(define (baumschmuck x color seccolor)
+  (if ( > x 1)         
+      (overlay/offset
+       (kugelrekursion 5 color seccolor)
+       (/ (* (- 70) x) 4)  -10       
+       (baumschmuck (- x 1) seccolor color)
+       )
+      (kugelrekursion 5 color seccolor)
       )
   )
 
-    
-(define baum1-körper
-  (overlay/align
-   "center" "middle"
-   (baum1-blätter 6)
-   (isosceles-triangle 200 30 "solid" "seagreen")
-   ))
+(define (kugelrekursion x color seccolor)
+  (if (> x 1 )
+      (overlay/align "center" "middle"
+                     (circle (- 10 (* x 2)) "solid" color)
+                     (kugelrekursion (- x 0.5) seccolor color)
+                     )
+      (circle 8 "solid" "yellow")
+      )
+  )
+  
 
+
+                  
+                 
+
+;Baumstern
 (define (baum1-stern x color seccolor)
   (if (> x 1)
       (overlay                
-       (star-polygon (- 40 (* x 6) ) 5 2 "solid" color)
+       (star-polygon (- 50 (* x 4) ) 5 2 "solid" color)
                  
        (baum1-stern (- x 1) seccolor color)
-       (rotate (* x 20)(baum1-stern (- x 5) color seccolor))
+   
        )
-      (star-polygon (- 40 (* x 0) ) 5 2 "solid" color)
+      (star-polygon 0 5 2 "solid" color)
       ))
 
-(define baum1
+
+;Blätter mit schmuck
+(define (blätter-mit-schmuck x) (overlay/align "center" "middle"
+                                           
+                                               (baumschmuck x "red" "blue")
+                                               (isosceles-triangle  ( * 20 x)  90 "solid" (make-color 18 140 0))
+
+                                               ))
+
+
+;eckige Baumblätter
+
+(define (baum1-blätter x) 
+  (if (> x 1)
+      (overlay/offset 
+       (blätter-mit-schmuck x)
+       0 (/ (* (- 100) x) 4)
+       (baum1-blätter (- x 1))
+       )
+      (isosceles-triangle 0 30 "solid" "seagreen")
+      ))
+
+
+(define (outer-leafs x)
+  (if (> x 1)
+      (overlay/offset 
+       (isosceles-triangle ( * 35 x)  90 "solid" (make-color 90 160 0))
+       0  (/ (* (- 100) x) 4)
+       (outer-leafs (- x 1))
+       )
+      (isosceles-triangle 0 30 "solid" "seagreen")
+      ))
+
+(define (outer-leafs2 x)
+  (if (> x 1)
+      (overlay/offset 
+       (isosceles-triangle ( * 40 x)  80 "solid" (make-color 0 100 0))
+       0 -100
+       (outer-leafs2 (- x 1))
+       )
+      (isosceles-triangle 0 30 "solid" "seagreen")
+      ))
+
+; (make-color 90 160 0)
+;(make-color 128 140 0)
+; (make-color 0 100 0)
+
+;Baumblätter auf großem Dreieck
+(define (baum1-körper x)
+  (overlay/align
+   "center" "middle"
+   (baum1-blätter (+ x 2))
+   (outer-leafs (+ x  1))
+   (outer-leafs2 (+ x 2 ))
+   ))
+
+
+; Steckt den Baum zusammen mit Stern Körper und Stamm
+(define baum1-ohne-stern
   (above/align "center"
-               ;; der Stern an der Spitze
-               (baum1-stern 5 "yellow" "red")
-               ;; die Zweige
-               baum1-körper
+
+               ;; die Blätter
+               (baum1-körper 4)
                ;der Stamm
                (rectangle 30 60 "solid" "brown")
-               )) 
+               ))
+
+(define baum1-mit-stern
+  (overlay/offset
+   ;; der rekursiver Stern an der Spitze   
+   (baum1-stern 9 "yellow" "red")
+   0 175
+   baum1-ohne-stern
+   ))
 
 
 ;Fügt den ersten Baum zur letzt erstellten Szene hinzu, welche done-background ist.
   
-(define scene-baum1 '(place-image (eval baum1) 100 200 (eval done-background)))
+(define scene-baum1 '(place-image (eval baum1-mit-stern) 100 200 (eval done-background)))
+
+
+;Erstellt den zweiten Tannenbaum
+
+
+(define (generate-leafs2 x)
+  (if (> x 1)
+  (overlay
+   (pulled-regular-polygon 290 3 1/3 30 "solid" "green")
+   (generate-leafs2 (- x 1))
+ )
+  (pulled-regular-polygon 0 3 1/3 30 "solid" "green")
+)
+
+  )
+
+(define (generate-leafs22 x)
+    (above
+     
+   ))
+
+(define baum2
+  
+   (generate-leafs2 5)
+  (generate-leafs22 5)
+   )
+
+(define baum2-mit-Stamm
+  (overlay/offset
+ baum2
+  0 120
+   (rectangle 30 80 "solid" "brown")))
 
 
 
+(define baum2-mit-Stern
+  (above
+   ;; der rekursiver Stern an der Spitze   
+   (baum1-stern 9 "pink" "blue")
+baum2-mit-Stamm
+   ))
 
+#|
 
+(define line
+  (scene+curve baum2-mit-Stern
+               130 110 0 1
+               120 250 0 1
+               "red")
+   )
+  
+|#
+               
+;Fügt baum2 zur letzt erstellten Szene hinzu
+
+(define scene-baum2 '(place-image (eval baum2-mit-Stern) 700 220 (eval scene-baum1)))
 
 
 
