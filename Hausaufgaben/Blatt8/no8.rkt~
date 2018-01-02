@@ -1,0 +1,34 @@
+#lang racket
+
+;Aufg 1
+#|
+1. Eine Funktion höherer Ordnung ist eine Funktion die als Input
+mindestens eine Funktion bekommt oder eine Funktion returned.
+
+2.
+a)
+Keine Funktion höherer Ordnung, da eine Integer Zahl als Input vorgesehen ist,
+und sonst nichts returned wird. und falls ein vorgesehener Input eingegeben wurde,
+kann nur das Symbol 'gerade oder 'ungerade returned werden, aber keine Funktion.
+
+b)
+map ist eine Funktion höherer Ordnung, da sie laut Racket Doc
+eine Funktion /proc als Input nimmt:
+(map proc lst ...+)-> list?
+
+c)
+Ist eine Funktion höherer Ordnung, da xs eine Funktion seien muss,
+damit map funktionieren kann (siehe b)
+
+d)
+Keine Funktion höherer Ordnung, da x und y auf größer/kleiner / gleicheit
+ geprüft werden und dies ist nicht möglich mit Funktionen, außerdem wird keine Funkt. returend.
+
+e)Ist eine Funktion höherer Ordnung da als Input eine Funktion genommen wird kann,
+siehe Aufgabe 3
+
+3.
+|#
+
+(define (schweinchen-in-der-mitte list f arg1)
+(lambda (arg2 arg3) (f arg2 arg1 arg3)))

@@ -1,0 +1,100 @@
+#lang racket
+
+(require 2htdp/image)
+
+
+;Aufg 1
+
+; allgemein rekursiv
+(define (zaehlen x xs)
+  (cond
+    [(empty? xs) 0]
+    [(equal? (car xs) x)  (+ 1 (zaehlen x (cdr xs)))]
+    [else (zaehlen x (cdr xs))]))
+
+; end-rekursiv
+(define (zaehlen2 x xs [acc 0])
+  (cond
+    [(empty? xs) acc]
+    [(equal? (car xs) x)  (zaehlen2 x (cdr xs) (+ acc 1))]
+    [else (zaehlen2 x (cdr xs) acc)]))
+
+; Funktionen höherer Ordnung
+(define (zaehlen3 x xs)
+  (length (filter ((curry equal?) x) xs)))
+
+
+;List to check
+(define list_test '(2 3 4 5 6 75 3 2 3) )
+
+;check the test list for how many times number 3 comes
+(zaehlen 3 list_test)
+(zaehlen2 3 list_test 0)
+(zaehlen3 3 list_test)
+
+
+
+
+;Aufg 2
+
+;2.1
+#|
+Als Datenstruktur für unsere Spiel des Lebens verwenden wir Listen. Es gibt eine Hauptliste die einzelne Unterlisten besitzt.
+Die Unterlisten stehen jeweils für einzelne Pixel, wobei jede Unterliste zwei Werte speichert.
+Einmal die Nummer des Pixels im Canvas und einmal ob der Pixel gezündet ist oder nicht.
+Dadurch dass wir Unterlisten besitzen und der erste Wert für die Pixelnummer steht, können wir mit Hilfe der assoc funktion auf die Unterliste zugreifen
+und den zweiten Wert auslesen, welcher als #t #f oder als 1 oder 0 dafür stehen könnte ob der Pixel angezündet ist oder nicht.
+Da wir außerdem wissen wie groß unser Canvas ist, können wir auf die benachbarten Pixel zugreifen
+, indem wir für den Pixel über einem anderen die breite von der Nummer des Pixels abziehen.
+Für den Pixel rechts diagonal unter eines anderen müssten wir dann nur die breite + 1 auf die Nummer den Pixels addieren.
+Weitere fälle sind analog dazu.
+Um die einzelenen Pixel aufs Canvas abzubilden, können wir mit Hilfe von der Canvasgröße die Pixelnummern aus der Liste rauslesen
+und mit Hilfe von Modulo auf die verschiedenen Reihen abbilden.
+|#
+
+
+; Hilfsfunktion um random Wert zu erhalten
+;TODO gibt aus irgendeinemgrund nur false aus
+(define random-tf
+  (list-ref  '(#t #f)
+             (random 2)))
+
+;generiert für gegebene Pixelnummer, ob Pixel lebendig oder nicht
+(define (make-pixel-pair num)
+  (list num random-tf)
+   )
+
+;generiert Pixelpaare nach Eingabe. Bei einem Spielfeld von 30 würde die Funktion 30 Paare generieren
+;TODO Unterlisten sind geschachtelt anstatt eigene Listen :(
+(define (generate-pixel-pairs num)
+  (if (> num 1)
+  (list (make-pixel-pair num) (generate-pixel-pairs (- num 1)))
+  (list (make-pixel-pair num))
+   )
+  )
+
+
+
+;2.2
+
+
+(define (living-cell)
+  (rectangle 10 10 "solid" "black"))
+
+(define (dead-cell)
+  (rectangle 10 10 "outline" "black"))
+
+; Hilfsfunktion die den true und false Werten, das Bild einer lebenden oder toten Zelle übergibt
+(define (y x)
+  (if x
+      (living-cell)
+      (dead-cell)))
+
+(define x '((#t #t #f)(#f #t #f)(#f #f #f)(#f #f #f)(#f #f #f)))
+
+(define (playing-field x [acc (rectangle 0 0 "solid" "black")])
+  (let ([field (above acc (apply beside (map y (car x))))])
+  (if (empty? (cdr x))
+      field
+      (playing-field (cdr x) field))))
+

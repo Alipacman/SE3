@@ -1,52 +1,24 @@
 #lang racket
 (require 2htdp/image)
-;Aufgabe 1.1
+(require 2htdp/universe)
 
-#|
-a) Funktion (take n xs)
-
-Bei der Funktion take handelt es sich um eine lineare Rekursion über eine Liste.
-Die sich auf der rechten Seite der definierenden Gleichung in jeder Fallunterscheidung
-selbst nur einmal verwendet.
-
-b) Funktion (drop n xs)
-
-c) Funktion (merge rel<? xs ys)
-Es handelt sich bei der merge um eine baumartige Rekursion, da in der
-Fallunterscheidung mehrfach auf die Definition Bezug genommen wird.
-
-d) Funktion (merge-sort rel<? xs)
-Es handelt sich bei der merge um eine baumartige Rekursion, da in der
-Fallunterscheidung mehrfach auf die Definition Bezug genommen wird.
-Nicht um eine Geschachtelte Rekursion, da andere Funktionen als übergebenhat
-
-
-(define (make-fire x outcolor incolor)
-  (if (> x 1) 
-      (overlay/align
-       "center" "bottom"
-       (rhombus 20 45 "solid" outcolor)
-       (rhombus 35 45 "solid" incolor)
-       (rhombus 42 (+ -140 (/ 280 x)) "solid" outcolor)
-       (rhombus 38 (+ 140 (/ 280 x)) "solid" incolor)
-        
-       (make-fire (- x 1) outcolor incolor)
-       ; (make-fire (- x ) incolor outcolor)
-       )
-  
-      (rhombus 40 (+ -140 (/ 340 x)) "solid" outcolor)
-       
-      ))
-
-
-|#
 
 
 ;Aufgabe 2
 
+#|
+Für unser Bild haben wir eine Szene erstellt und diese immer weiter erweitert mit der Funktion
+"place-image".
+Aufgerufen werden kann unsere Szene mit :
+(eval final-scene)
+Für die Animation haben wir den ersten Baum genommen und den Stern und die Kugel farben geändert.
+Um die Animation aufzurufen:
+(animate create-xmas-scene)
+|#
+
+
 ;Leere Szene 800 x 400
 (define empty-canvas '(empty-scene 800 400 (make-color 110 30 30)))
-
 
 ;erstellt Boden und Teppich
 
@@ -63,29 +35,28 @@ Nicht um eine Geschachtelte Rekursion, da andere Funktionen als übergebenhat
 
 ;erstellt Kamin und Feuer
 
+;erstellt Flammenspitze
 (define (make-fire x outcolor incolor)
   (if (> x 1) 
       (overlay/align
        "center" "bottom"
        (rhombus (/ 80 x) 45 "solid" outcolor)
-       ; (rotate (* 8 x)(rhombus (* x 1.2) 7 "solid" incolor))
-               
-       ; (rhombus (* 8 x) 20 "solid" incolor)
-        
        (make-fire (- x 1) incolor outcolor)
-       ; (make-fire (- x ) incolor outcolor)
        )
   
       (make-inner-fire 4 incolor outcolor)
        
       ))
 
+;erstellt Flamen boden, bei else wird ein leeres Dreieck übergeben, dies dient nur dafür dass beim abschluss der rekursion noch etwas anderes
+;in die Szene hinzugefügt werden kann bei bedarf (kommt noch öfter vor)
+
 (define (make-inner-fire x color seccolor)
   (if (> x 1)
       (overlay
        (isosceles-triangle  (/ 140 x)  90 "solid" color)
        (make-inner-fire (- x 1) seccolor color))
-      (isosceles-triangle  0  120 "solid" color)
+      (isosceles-triangle  0  0 "solid" color)
       ))
  
 
@@ -177,8 +148,8 @@ Nicht um eine Geschachtelte Rekursion, da andere Funktionen als übergebenhat
                   
 ;Fügt Fenster zur letzt erstellten Szene hinzu
 
-(define fire-window-scene1 '(place-image (eval window) 600 150 (eval fire-sock-kranz-scene)))
-(define done-background '(place-image (eval window) 200 150 (eval fire-window-scene1)))
+(define fire-window1-scene '(place-image (eval window) 600 150 (eval fire-sock-kranz-scene)))
+(define done-background '(place-image (eval window) 200 150 (eval fire-window1-scene)))
 
 
 
@@ -187,6 +158,8 @@ Nicht um eine Geschachtelte Rekursion, da andere Funktionen als übergebenhat
 
 
 ;Baumschmuck
+
+;erstellt Kugeln und setzt sie mit einem offset voneinander entfernt hin
 (define (baumschmuck x color seccolor)
   (if ( > x 1)         
       (overlay/offset
@@ -198,6 +171,7 @@ Nicht um eine Geschachtelte Rekursion, da andere Funktionen als übergebenhat
       )
   )
 
+;einzelne Kugeln besitzen eine Rekursion für die Muster innerhalb
 (define (kugelrekursion x color seccolor)
   (if (> x 1 )
       (overlay/align "center" "middle"
@@ -213,23 +187,23 @@ Nicht um eine Geschachtelte Rekursion, da andere Funktionen als übergebenhat
                   
                  
 
-;Baumstern
-(define (baum1-stern x color seccolor)
+;Baumstern mit rekursionsmuster
+(define (baum-stern x color seccolor)
   (if (> x 1)
       (overlay                
        (star-polygon (- 50 (* x 4) ) 5 2 "solid" color)
                  
-       (baum1-stern (- x 1) seccolor color)
+       (baum-stern (- x 1) seccolor color)
    
        )
       (star-polygon 0 5 2 "solid" color)
       ))
 
 
-;Blätter mit schmuck
-(define (blätter-mit-schmuck x) (overlay/align "center" "middle"
+; erstellt Blätter mit Kugelschmuck
+(define (blätter-mit-schmuck x color seccolor) (overlay/align "center" "middle"
                                            
-                                               (baumschmuck x "red" "blue")
+                                               (baumschmuck x color seccolor)
                                                (isosceles-triangle  ( * 20 x)  90 "solid" (make-color 18 140 0))
 
                                                ))
@@ -237,17 +211,20 @@ Nicht um eine Geschachtelte Rekursion, da andere Funktionen als übergebenhat
 
 ;eckige Baumblätter
 
-(define (baum1-blätter x) 
+
+;äußeren Blätter mit schmuck
+(define (baum1-blätter-mit-schmuck x color seccolor) 
   (if (> x 1)
       (overlay/offset 
-       (blätter-mit-schmuck x)
+       (blätter-mit-schmuck x color seccolor)
        0 (/ (* (- 100) x) 4)
-       (baum1-blätter (- x 1))
+       (baum1-blätter-mit-schmuck (- x 1) color seccolor)
        )
       (isosceles-triangle 0 30 "solid" "seagreen")
       ))
 
 
+;bisschen dunklere Blätter
 (define (outer-leafs x)
   (if (> x 1)
       (overlay/offset 
@@ -258,6 +235,7 @@ Nicht um eine Geschachtelte Rekursion, da andere Funktionen als übergebenhat
       (isosceles-triangle 0 30 "solid" "seagreen")
       ))
 
+;noch dunkelere Blätter
 (define (outer-leafs2 x)
   (if (> x 1)
       (overlay/offset 
@@ -268,36 +246,44 @@ Nicht um eine Geschachtelte Rekursion, da andere Funktionen als übergebenhat
       (isosceles-triangle 0 30 "solid" "seagreen")
       ))
 
-; (make-color 90 160 0)
-;(make-color 128 140 0)
-; (make-color 0 100 0)
 
-;Baumblätter auf großem Dreieck
-(define (baum1-körper x)
+;Fügt Baumblätter zusammen
+(define (baum1-körper x color seccolor)
   (overlay/align
    "center" "middle"
-   (baum1-blätter (+ x 2))
+   (baum1-blätter-mit-schmuck (+ x 2) color seccolor)
    (outer-leafs (+ x  1))
    (outer-leafs2 (+ x 2 ))
    ))
 
 
-; Steckt den Baum zusammen mit Stern Körper und Stamm
-(define baum1-ohne-stern
+; Steckt den Baum zusammen (Körper und Stamm)
+(define (baum1-ohne-stern color seccolor)
   (above/align "center"
 
                ;; die Blätter
-               (baum1-körper 4)
+               (baum1-körper 4 color seccolor)
                ;der Stamm
                (rectangle 30 60 "solid" "brown")
                ))
 
+
+;Fügt zum Körper& Stamm den Stern hinzu
 (define baum1-mit-stern
   (overlay/offset
    ;; der rekursiver Stern an der Spitze   
-   (baum1-stern 9 "yellow" "red")
+   (baum-stern 9 "yellow" "red")
    0 175
-   baum1-ohne-stern
+   (baum1-ohne-stern "purple" "red")
+   ))
+
+;fertigerBaum mit 
+(define baum1-für-animation
+  (overlay/offset
+   ;; der rekursiver Stern an der Spitze   
+   (baum-stern 9 "blue" "pink")
+   0 175
+   ( baum1-ohne-stern "green" "orange")
    ))
 
 
@@ -309,28 +295,48 @@ Nicht um eine Geschachtelte Rekursion, da andere Funktionen als übergebenhat
 ;Erstellt den zweiten Tannenbaum
 
 
-(define (generate-leafs2 x)
+
+;erstellt Grundgerüst des zweiten Baumes (rechts)
+(define (generate-grundgerüst-baum2 x)
   (if (> x 1)
   (overlay
-   (pulled-regular-polygon 290 3 1/3 30 "solid" "green")
-   (generate-leafs2 (- x 1))
+    (generate-grundgerüst-baum2 (- x 1))
+   (pulled-regular-polygon (* 69 x) 3 1/3 30 "solid" (make-color 10 (- 250 (* x 30)) 10))
  )
   (pulled-regular-polygon 0 3 1/3 30 "solid" "green")
 )
 
   )
 
-(define (generate-leafs22 x)
-    (above
+
+
+;erstellt den roten sternenschmuck des Baumes
+(define (generate-stars x)
+  (if (> x 1)
+      (overlay/offset (above
+                                    (pulled-regular-polygon (* 7 x) 3 1/3 101 "solid"
+                                                            (make-color(* x 30) (* x 12) (* x 12) ))
+                                    (generate-stars (- x 1))
+                                    )
+                      
+                      35 (* 3.5 x)
+                      (generate-stars (- x 1)))
+      (pulled-regular-polygon 0 3 1/3 30 "solid" "green")
      
+      ))
+
+
+;setzt grundgerüsst und Sterne zusammen
+(define baum2
+  (overlay
+     (generate-stars 8)
+   (generate-grundgerüst-baum2 5)
+
    ))
 
-(define baum2
-  
-   (generate-leafs2 5)
-  (generate-leafs22 5)
-   )
 
+
+;setzt Baumkörper und Stamm zusammen
 (define baum2-mit-Stamm
   (overlay/offset
  baum2
@@ -338,30 +344,33 @@ Nicht um eine Geschachtelte Rekursion, da andere Funktionen als übergebenhat
    (rectangle 30 80 "solid" "brown")))
 
 
-
+;setzt Stern und Baum zusammen
 (define baum2-mit-Stern
-  (above
+  (overlay/offset
    ;; der rekursiver Stern an der Spitze   
-   (baum1-stern 9 "pink" "blue")
-baum2-mit-Stamm
+   (baum-stern 9 "pink" "blue")
+   0 160
+   baum2-mit-Stamm
    ))
 
-#|
-
-(define line
+;setzt eine Dekorationslinie am Baum
+(define baum2-mit-linie
   (scene+curve baum2-mit-Stern
-               130 110 0 1
-               120 250 0 1
-               "red")
+               165 100 0 1
+               120 300 0 1
+               "purple")
    )
-  
-|#
+
                
 ;Fügt baum2 zur letzt erstellten Szene hinzu
 
-(define scene-baum2 '(place-image (eval baum2-mit-Stern) 700 220 (eval scene-baum1)))
+(define final-scene '(place-image (eval baum2-mit-linie) 700 220 (eval scene-baum1)))
 
 
 
+;animation
 
+(define (create-xmas-scene t)
+(underlay/xy (rectangle 400 400 "solid" (make-color 20 10 120))  0 0
+(if (< 25 (modulo t 50)) baum1-mit-stern baum1-für-animation)))
 

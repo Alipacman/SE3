@@ -1,0 +1,31 @@
+#lang racket
+
+; Counting Numbers from a list
+; First define a add function
+;(define (add int)
+;  (+ int 1))
+;Then check if a and b are equal. if true add 1 to int
+
+
+(define (add_if_equal a b)
+  (cond
+   [(equal? a b)
+    1]
+   [else 0]))
+
+; Use a List to check
+(define list_test(list 2 3 4 5 6 75 3 2))
+
+
+;count_list takes a list and a value to checke for  
+(define (count_lst lst check)
+  ; local function iter:
+  (define (iter lst num dcheck)
+    (cond
+     [(empty? lst) num]
+     [else (iter (rest lst) (+ num (add_if_equal (car lst) dcheck)) dcheck)]))
+  ; body of my-length calls iter:
+  (iter lst 0 check))
+
+;check the test list for how many times number 3 comes
+(count_lst list_test 3)
