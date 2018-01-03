@@ -1,5 +1,7 @@
 #lang racket
 
+(require se3-bib/setkarten-module)
+
 ;Aufg 1
 #|
 1. Eine Funktion höherer Ordnung ist eine Funktion die als Input
@@ -30,7 +32,7 @@ siehe Aufgabe 3
 3.
 Bei der Funktion schweinchen-in-der-mitte wird list an das Argument f gebunden und die Zahl 4 an das Argument arg1.
 Dann wird in der inneren Funktion die Zahl 1 an das Argument arg2 und die Zahl 3 an das Argument arg3 gebunden.
-Die FUnktionsdefiniton geschieht im Kontext der aktuellen Bindungsumgebung, daher handelt es sich um ein Closure.
+Die Funktionsdefiniton geschieht im Kontext der aktuellen Bindungsumgebung, daher handelt es sich um ein Closure.
 -----muss hier nochwas hin?
 
 4.
@@ -70,10 +72,74 @@ Danach wird auf die Liste '(-45 -6) die Funktion (curry foldl + 0) angewendet, w
 
 ;2.3
 (define (sum-of-big-six lst)
-  (foldl + 0 ((compose (curry filter odd?)(curry filter (curry < 6))) lst)  
-   ))
+  (foldl + 0 ((compose (curry filter odd?)(curry filter (curry < 6))) lst)))
 
 ;2.4
+
+
+;Aufg 3.1
+;Mögliche Ausprägungen in verschiedenen Listen
+
+(define number '(1 2 3))
+(define pattern '(waves oval rectangle))
+(define mode '(outline solid hatched))
+(define color '(red green blue))
+
+(define (select-random ls)
+  (let ((len (length ls)))        
+    (list-ref ls (random len)))) 
+
+
+;Zum erstellen einer Spielkarte
+(define (make-card nummber pattern mode color)
+  (list nummber pattern mode color))
+
+;Mögliche Spielkarte
+(define random-card (list (select-random number) (select-random pattern) (select-random mode) (select-random color)))
+
+
+;3.2
+
+(define (make-deck number pattern mode color [acc '()])
+  (let ([deck (map (curry cons (car number)) (map (curry cons (car pattern)) (map (curry cons (car mode)) color)))])
+    (if
+     (eq? (cdr number) '()) deck
+     (make-deck (cdr number) (cdr pattern) (cdr mode) (cdr color)))))
+
+(make-deck number pattern mode color)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
