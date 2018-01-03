@@ -100,35 +100,23 @@ Danach wird auf die Liste '(-45 -6) die Funktion (curry foldl + 0) angewendet, w
 
 ;3.2
 
+;Funktion die ein Deckerstellt, funktioniert noch nicht& ist noch nicht zu edne gedacht :D
 (define (make-deck number pattern mode color [acc '()])
-  (let ([deck (map (curry cons (car number)) (map (curry cons (car pattern)) (map (curry cons (car mode)) color)))])
+  (let ([deck (list acc (map (curry list (car number)) (map (curry list (car pattern)) (map (curry list (car  mode)) color))))])
     (if
-     (eq? (cdr number) '()) deck
-     (make-deck (cdr number) (cdr pattern) (cdr mode) (cdr color)))))
+     (eq? (cdr number) '()) (shuffle deck)
+     (make-deck (cdr number) (cdr pattern) (cdr mode) (cdr color) deck))))
 
 (make-deck number pattern mode color)
 
 
+;zeigt einzelnde Karte an, muss noch rekursiv gemacht werden
+(define (show-card card)
+  (show-set-card (car card) (cadr card) (caddr card) (cadddr card)))
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+;zeigt deck an
+(define (show-deck deck)
+  (map show-card deck))
 
 
 
