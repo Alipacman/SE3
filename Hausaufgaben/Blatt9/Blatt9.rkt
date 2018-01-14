@@ -6,6 +6,7 @@
   (autor
    :reader beitrag-autor
    :writer set-autor
+   :initarg :autor
    :initvalue ""
    :type <string>
    :documentation
@@ -13,6 +14,7 @@
   (erscheinungsjahr
    :reader beitrag-jahr
    :writer set-jahr
+   :initarg :erscheinungsjahr
    :initvalue 0000
    :type <number>
    :documentation
@@ -20,12 +22,14 @@
     (titel
    :reader beitrag-titel
    :writer set-titel
+   :initarg :titel
    :initvalue ""
    :type <string>
    :documentation
    "Titel_der_Veröffentlichung_von_einem_Beitrag")
     (schlüssel
    :reader beitrag-schlüssel
+   :initarg :schlüssel
    :initvalue '()
    :type <list>
    :documentation
@@ -40,6 +44,7 @@
     (verlag
    :reader buch-verlag
    :writer set-verlag
+   :initarg :verlag
    :initvalue ""
    :type <string>
    :documentation
@@ -47,6 +52,7 @@
     (verlagsort
    :reader buch-verlagsort 
    :writer set-verlagsort
+   :initarg :verlagsort
    :initvalue ""
    :type <string>
    :documentation
@@ -54,6 +60,7 @@
   (reihe
    :reader buch-reihe
    :writer set-reihe
+   :initarg :reihe
    :initvalue ""
    :type <string>
    :documentation
@@ -75,6 +82,7 @@
     (herausgeber
    :reader sammelband-herausgeber
    :writer set-herausgeber
+   :initarg :herausgeber
    :initvalue ""
    :type <string>
    :documentation
@@ -82,6 +90,7 @@
     (seitenangabe
    :reader sammelband-seitenangabe
    :writer set-seitenangabe
+   :initarg :seitenangabe
    :initvalue 0
    :type <number>
    :documentation
@@ -96,6 +105,7 @@
     (zeitschrifts-name
    :reader zeitschrift-name
    :writer set-zeitschrift-name
+   :initarg :zeitschrifts-name
    :initvalue ""
    :type <string>
    :documentation
@@ -103,6 +113,7 @@
     (band-nummer
    :reader band-nummer
    :writer set-band-nummer
+   :initarg :band-nummer
    :initvalue 0
    :type <number>
    :documentation
@@ -110,6 +121,7 @@
     (heft-nummer
    :reader heft-nummer
    :writer set-heft-nummer
+   :initarg :heft-nummer
    :initvalue 0
    :type <number>
    :documentation
@@ -117,6 +129,7 @@
     (erscheinungs-monat
    :reader zeitschrift-erscheinungs-monat
    :writer set-erscheinungs-monat
+   :initarg :erscheinungs-monat
    :initvalue ""
    :type <string>
    :documentation
@@ -131,7 +144,7 @@
       :autor "Nessie"
       :erscheinungsjahr 1790
       :titel "Mein Leben im Loch Ness: Verfolgt als Ungeheuer"
-      :schlüssel (list (string->number "Nessie") 1790 (string->number "Mein Leben im Loch Ness: Verfolgt als Ungeheuer"))
+      :schlüssel (list "Nessie" (number->string 1790) "Mein Leben im Loch Ness: Verfolgt als Ungeheuer")
       :verlag "Minority-Verlag"
       :verlagsort "Inverness"
       :reihe "Die besondere Biographie"
@@ -141,7 +154,7 @@
       :autor "Adams, D."
       :erscheinungsjahr 1979
       :titel: "Prefect, F"
-      :schlüssel (list (string->number "Adams, D.") 1790 (string->number "Prefect, F"))
+      :schlüssel (list "Adams, D." (number->string 1790) "Prefect, F")
       :verlag "Galactic Press"
       :verlagsort  "Vega-System, 3rd planet"
       :reihe "Travel in Style"
@@ -154,7 +167,7 @@
       :autor "Wells, H. G."
       :erscheinungsjahr 3200
       :titel "Zeitmaschinen leicht gemacht"
-      :schlüssel (list (string->number "Wells, H. G.") 3200 (string->number "Zeitmaschinen leicht gemacht"))
+      :schlüssel (list "Wells, H. G." (number->string 3200) "Zeitmaschinen leicht gemacht")
       :reihe "Heimwerkerpraxis für Anfänger"
       :band-nummer 500
       :heft-nummer 4
